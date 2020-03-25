@@ -44,6 +44,7 @@ class Decoder(srd.Decoder):
     license = 'wtfpl'
     inputs = ['uart']
     outputs = ['uart']
+    tags = []
     annotations = (
         ('debug-rx', 'Rx Debug output'),
         ('debug-tx', 'Tx Debug output'),
@@ -57,27 +58,43 @@ class Decoder(srd.Decoder):
         ('dlc3-tx', 'DLC 3 Rx'),
     )
     annotation_rows = (
-        ('debug-rx', 'Rx Debug', (0,)),
-        ('debug-tx', 'Tx Debug', (1,)),
-        ('dlc0-rx', 'DLC 0 Rx', (2,)),
-        ('dlc0-tx', 'DLC 0 Tx', (3,)),
-        ('dlc1-rx', 'DLC 1 Rx', (4,)),
-        ('dlc1-tx', 'DLC 1 Tx', (5,)),
-        ('dlc2-rx', 'DLC 2 Rx', (6,)),
-        ('dlc2-tx', 'DLC 2 Tx', (7,)),
-        ('dlc3-rx', 'DLC 3 Rx', (8,)),
-        ('dlc3-tx', 'DLC 3 Tx', (9,)),
+        ('row-debug-rx', 'Rx Debug', (0,)),
+        ('row-debug-tx', 'Tx Debug', (1,)),
+        ('row-dlc0-rx', 'DLC 0 Rx', (2,)),
+        ('row-dlc0-tx', 'DLC 0 Tx', (3,)),
+        ('row-dlc1-rx', 'DLC 1 Rx', (4,)),
+        ('row-dlc1-tx', 'DLC 1 Tx', (5,)),
+        ('row-dlc2-rx', 'DLC 2 Rx', (6,)),
+        ('row-dlc2-tx', 'DLC 2 Tx', (7,)),
+        ('row-dlc3-rx', 'DLC 3 Rx', (8,)),
+        ('row-dlc3-tx', 'DLC 3 Tx', (9,)),
     )
     options = (
-        {'id': 'format', 'desc': 'Data format', 'default': 'hex',
-            'values': ('ascii', 'dec', 'hex', 'oct', 'bin')},
-        {'id': 'debug', 'desc': 'Enable Debug', 'default': 'no',
-            'values': ('yes', 'no')},
+        {
+            'id': 'format',
+            'desc': 'Data format',
+            'default': 'hex',
+            'values': ('ascii', 'dec', 'hex', 'oct', 'bin'),
+        },
+        {
+            'id': 'debug',
+            'desc': 'Enable Debug',
+            'default': 'no',
+            'values': ('yes', 'no'),
+        },
     )
 
     state = ['OPEN', 'OPEN']
     length = [0, 0]
     control = ['', '']
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.reset_state(0)
+        self.reset_state(1)
+
 
     def start(self):
         self.out_ann = self.register(srd.OUTPUT_ANN)
