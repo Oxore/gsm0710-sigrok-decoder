@@ -15,6 +15,7 @@ STATES = [
         'ADDR'
         'CONTROL'
         'LEN'
+        'LEN2'
         'DATA'
         'FCS'
         'CLOSE'
@@ -174,6 +175,21 @@ class Decoder(srd.Decoder):
 
         elif self.state[rxtx] == 'LEN':
             length = byte // 2
+            self.length[rxtx] = length
+            self.put_debug(rxtx, ss, es, [
+                'Length {0}'.format(self.length[rxtx]),
+                'L {0}'.format(self.length[rxtx])
+                ])
+            if byte % 2:
+                if length > 0:
+                    self.state[rxtx] = 'DATA'
+                else:
+                    self.state[rxtx] = 'FCS'
+            else:
+                self.state[rxtx] = 'LEN2'
+
+        elif self.state[rxtx] == 'LEN2':
+            length = byte * 128 + self.length[rxtx]
             self.length[rxtx] = length
             self.put_debug(rxtx, ss, es, [
                 'Length {0}'.format(self.length[rxtx]),
